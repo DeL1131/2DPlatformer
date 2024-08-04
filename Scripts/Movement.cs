@@ -35,6 +35,11 @@ public class Movement : MonoBehaviour
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
             _rigidbody.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
+
+        if (Input.GetKeyDown(Attack))
+        {
+            Attacked?.Invoke();
+        }
         if (direction.x != 0)
         {
             Running?.Invoke(true);
@@ -51,11 +56,6 @@ public class Movement : MonoBehaviour
         else
         {
             Running?.Invoke(false);
-        }
-
-        if (Input.GetKeyDown(Attack))
-        {
-            Attacked?.Invoke();
         }
     }
 }

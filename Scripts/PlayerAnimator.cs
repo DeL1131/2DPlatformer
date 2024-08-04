@@ -30,12 +30,12 @@ public class PlayerAnimator : MonoBehaviour
 
     private void PlayJumpAnimation()
     {
-        _animator.SetTrigger(PlayerAnimatorData.Params.Jump);
+        _animator.Play(PlayerAnimatorData.Params.Jump);
     }
 
     private void PlayAttackAnimation()
     {
-        _animator.SetTrigger(PlayerAnimatorData.Params.Attack);
+        _animator.Play(PlayerAnimatorData.Params.Attack);
         
     }
 
