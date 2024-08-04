@@ -12,7 +12,6 @@ public class CoinsSpawner : MonoBehaviour
     private ObjectPool<Coin> _pool;
 
     private int _numberOfPoint;
-    private bool _isWork = true;
     private int _maxCoins;
     private int _coinsSpawned;
 
@@ -36,7 +35,6 @@ public class CoinsSpawner : MonoBehaviour
     private IEnumerator SpawnCoins()
     {
         WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-        
 
         while (_coinsSpawned < _maxCoins)
         {
@@ -61,4 +59,4 @@ public class CoinsSpawner : MonoBehaviour
         coin.CoinPickedUp -= ReturnToPool;
         _pool.Release(coin);
     }
-}
+}   

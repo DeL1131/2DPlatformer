@@ -3,13 +3,10 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    public Action<Coin> CoinPickedUp;
+    public event Action<Coin> CoinPickedUp;
 
-    private void OnTriggerStay2D(Collider2D collision)
+    public void ReturnToPool()
     {
-        if(collision.gameObject.TryGetComponent<Player>(out Player _))
-        {
-            CoinPickedUp?.Invoke(this);
-        }
+        CoinPickedUp?.Invoke(this);
     }
 }

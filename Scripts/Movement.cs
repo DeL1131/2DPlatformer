@@ -1,21 +1,25 @@
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 [RequireComponent (typeof(Rigidbody2D))]
 
 public class Movement : MonoBehaviour
 {
+    private const KeyCode Jump = KeyCode.Space;
+    private const KeyCode Attack = KeyCode.Mouse0;
+
     public readonly string Horizontal = "Horizontal";
 
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
 
-    private Animator _animator;
+    public event Action Jumped;
+    public event Action Attacked;
+    public event Action<bool> Running;
     private Rigidbody2D _rigidbody;
 
     private void Start()
     {
-        _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
     }
 
@@ -25,9 +29,15 @@ public class Movement : MonoBehaviour
 
         transform.Translate(_speed * Time.deltaTime * direction);
 
+        if (Input.GetKeyDown(Jump))
+        {
+            Jumped?.Invoke();
+            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
+            _rigidbody.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+        }
         if (direction.x != 0)
         {
-            _animator.SetBool("isRunning", true);
+            Running?.Invoke(true);
 
             if (direction.x > 0)
             {
@@ -40,18 +50,12 @@ public class Movement : MonoBehaviour
         }
         else
         {
-          _animator.SetBool("isRunning", false);
+            Running?.Invoke(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(Attack))
         {
-            _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f); // —брасываем вертикальную скорость перед прыжком
-            _rigidbody.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-            _animator.Play("Jump");
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            _animator.Play("Attack");
+            Attacked?.Invoke();
         }
     }
 }

@@ -46,4 +46,3 @@ public class EnemyPatrul : MonoBehaviour
         _target = _allPlacesPoint[_numberPoint].transform;
     }
 }
-

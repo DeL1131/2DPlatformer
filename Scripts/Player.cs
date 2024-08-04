@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -7,10 +6,10 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.TryGetComponent<Coin>(out Coin _))
-        {
+        if(collision.gameObject.TryGetComponent<Coin>(out Coin coin))
+        {            
+            coin.ReturnToPool();
             Coins++;
-            Debug.Log(Coins);
         }
     }
 }
