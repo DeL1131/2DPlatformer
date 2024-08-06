@@ -6,8 +6,6 @@ public class CoinsSpawner : MonoBehaviour
 {
     [SerializeField] private Coin _prefab;
     [SerializeField] private Transform[] _pointsSpawn;
-    [SerializeField] private float _repeatRate;
-    [SerializeField] private int _poolCapacity;
 
     private ObjectPool<Coin> _pool;
 
@@ -22,8 +20,8 @@ public class CoinsSpawner : MonoBehaviour
             actionOnGet: (coin) => ActivateOnGet(coin),
             actionOnRelease: (coin) => coin.gameObject.SetActive(false),
             actionOnDestroy: (coin) => Destroy(coin.gameObject),
-            collectionCheck: true,
-            defaultCapacity: _poolCapacity);
+            collectionCheck: true);
+  
         _maxCoins = _pointsSpawn.Length;
     }
 
