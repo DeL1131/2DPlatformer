@@ -1,12 +1,12 @@
 using System;
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+public class Coin : MonoBehaviour , IPickupable
 {
-    public event Action<Coin> CoinPickedUp;
+    public event Action<Coin> PickedUp;
 
-    public void ReturnToPool()
+    public void Pickup()
     {
-        CoinPickedUp?.Invoke(this);
+        PickedUp?.Invoke(this);
     }
 }

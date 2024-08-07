@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HealthBox : MonoBehaviour
+public class HealthBox : MonoBehaviour, IPickupable
 {
     [SerializeField] private float Healing;
     public float HealingAmount { get; private set; }
@@ -10,7 +10,7 @@ public class HealthBox : MonoBehaviour
         HealingAmount = Healing;
     }
 
-    public void DestroyHealthBox()
+    public void Pickup()
     {
         Destroy(gameObject);
     }

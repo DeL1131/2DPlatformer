@@ -44,7 +44,7 @@ public class CoinsSpawner : MonoBehaviour
 
     private void ActivateOnGet(Coin coin)
     {
-        coin.CoinPickedUp += ReturnToPool;
+        coin.PickedUp += ReturnToPool;
 
         _numberOfPoint = (++_numberOfPoint) % _pointsSpawn.Length;
         coin.transform.position = _pointsSpawn[_numberOfPoint].transform.position;
@@ -54,7 +54,7 @@ public class CoinsSpawner : MonoBehaviour
 
     private void ReturnToPool(Coin coin)
     {
-        coin.CoinPickedUp -= ReturnToPool;
+        coin.PickedUp -= ReturnToPool;
         _pool.Release(coin);
     }
 }   

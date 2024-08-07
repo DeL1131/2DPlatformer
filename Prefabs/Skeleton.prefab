@@ -13,11 +13,12 @@ GameObject:
   - component: {fileID: 3749819168410445527}
   - component: {fileID: 7161063881675072687}
   - component: {fileID: 3833805174127516049}
-  - component: {fileID: 4560575156343950251}
   - component: {fileID: 230721413405793857}
   - component: {fileID: 8020647860193724900}
   - component: {fileID: 8066726182058348204}
-  m_Layer: 0
+  - component: {fileID: 3756320214818878032}
+  - component: {fileID: 484004867613877376}
+  m_Layer: 7
   m_Name: Skeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32,7 +33,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 417682592340049553}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 3.9, y: -2.96, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
@@ -197,22 +198,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &4560575156343950251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 417682592340049553}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5896cd154f3464489bb3cf4b98e4105, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _speed: 1
-  _maxHeallth: 50
-  _damage: 10
-  _attackRange: 3
 --- !u!114 &230721413405793857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,6 +213,7 @@ MonoBehaviour:
   _allPlacesPoint:
   - {fileID: 0}
   - {fileID: 0}
+  _speed: 1
 --- !u!114 &8020647860193724900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,3 +261,34 @@ CircleCollider2D:
   m_Offset: {x: 0.0042688055, y: 0.046955746}
   serializedVersion: 2
   m_Radius: 0.70394546
+--- !u!114 &3756320214818878032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417682592340049553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 023ef63278af04041ab48f5c47365ec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 1
+  MaxHeallth: 50
+  Damage: 40
+  AttackRange: 0.1
+  LayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!114 &484004867613877376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417682592340049553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40bf5cd50e0d53245ae67f22f9a48339, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

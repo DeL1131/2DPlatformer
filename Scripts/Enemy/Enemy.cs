@@ -4,33 +4,33 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] protected float _speed;
-    [SerializeField] protected float _maxHeallth;
-    [SerializeField] protected float _damage;
-    [SerializeField] protected float _attackRange;
-    [SerializeField] protected LayerMask _layerMask;
+    [SerializeField] protected float Speed;
+    [SerializeField] protected float MaxHeallth;
+    [SerializeField] protected float Damage;
+    [SerializeField] protected float AttackRange;
+    [SerializeField] protected LayerMask LayerMask;
 
-    public float Speed { get; private set; }
+    public float CurrendSpeed { get; private set; }
     public float CurrentHealth { get; protected set; }
-    public float Damage { get; private set; }
-    public float AttackRange { get; private set; }
+    public float CurrentDamage { get; private set; }
+    public float CurrentAttackRange { get; private set; }
 
     public event Action Died;
     public event Action Attacked;
 
     private void Awake()
     {
-        Speed = _speed;
-        CurrentHealth = _maxHeallth;
-        Damage = _damage;
-        AttackRange = _attackRange;
+        CurrendSpeed = CurrendSpeed;
+        CurrentHealth = MaxHeallth;
+        CurrentDamage = Damage;
+        CurrentAttackRange = AttackRange;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.TryGetComponent(out IDamagable damagable))
         {
-            if (_layerMask == (_layerMask | (1 << collision.gameObject.layer)))
+            if (LayerMask == (LayerMask | (1 << collision.gameObject.layer)))
                 Attack(damagable);
         }
     }
@@ -40,17 +40,17 @@ public abstract class Enemy : MonoBehaviour
         if (CurrentHealth <= 0)
         {
             Died?.Invoke();
-            StartCoroutine(EnemyDied());
+            StartCoroutine(StartEnemyDeath());
         }
     }
 
     private void Attack(IDamagable damagable)
     {
         Attacked?.Invoke();
-        damagable.TakeDamage(Damage);
+        damagable.TakeDamage(CurrentDamage);
     }
 
-    private IEnumerator EnemyDied()
+    private IEnumerator StartEnemyDeath()
     {
         yield return new WaitForSeconds(0.3f);
         Destroy(gameObject);        

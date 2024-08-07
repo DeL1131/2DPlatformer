@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    private const KeyCode Jump = KeyCode.Space;
-    private const KeyCode Attack = KeyCode.Mouse0;
+    private const KeyCode CommandJump = KeyCode.Space;
+    private const KeyCode CommandAttack = KeyCode.Mouse0;
 
     public readonly string Horizontal = "Horizontal";
 
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
 
+    private Rigidbody2D _rigidbody;
+
     public event Action Jumped;
     public event Action Attacked;
     public event Action<bool> Running;
-    private Rigidbody2D _rigidbody;
 
     private void Start()
     {
@@ -29,14 +30,14 @@ public class Movement : MonoBehaviour
 
         transform.Translate(_speed * Time.deltaTime * direction);
 
-        if (Input.GetKeyDown(Jump))
+        if (Input.GetKeyDown(CommandJump))
         {
             Jumped?.Invoke();
             _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
             _rigidbody.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
         }
 
-        if (Input.GetKeyDown(Attack))
+        if (Input.GetKeyDown(CommandAttack))
         {
             Attacked?.Invoke();
         }

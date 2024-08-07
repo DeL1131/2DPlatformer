@@ -7,7 +7,7 @@ public class Player : MonoBehaviour, IDamagable
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _damage;
     [SerializeField] private float _attackRange;
-    [SerializeField] protected LayerMask _layerMask;
+    [SerializeField] private LayerMask _layerMask;
 
     public int Coins { get; private set; }
     public float CurrentHealth { get; private set; }
@@ -27,8 +27,7 @@ public class Player : MonoBehaviour, IDamagable
 
     private void Start()
     {
-        CurrentHealth = _maxHealth;
-        
+        CurrentHealth = _maxHealth;       
     }
 
     private void Update()
@@ -46,24 +45,28 @@ public class Player : MonoBehaviour, IDamagable
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent<Coin>(out Coin coin))
+        if (collision.gameObject.TryGetComponent(out IPickupable iPickupable))
         {
-            coin.ReturnToPool();
+            iPickupable.Pickup();
             Coins++;
         }
         if (collision.gameObject.TryGetComponent<HealthBox>(out HealthBox healthBox))
         {
             TakeHealingBox(healthBox.HealingAmount);
-            healthBox.DestroyHealthBox();
+            healthBox.Pickup();
         }
     }
 
     private void TakeHealingBox(float amountHealing)
     {
+        Debug.Log(CurrentHealth);
         CurrentHealth += amountHealing;
+        Debug.Log(CurrentHealth);
 
-        if (CurrentHealth > 100)
-            CurrentHealth = 100;
+        if (CurrentHealth > _maxHealth)
+            CurrentHealth = _maxHealth;
+        Debug.Log(CurrentHealth);
+
     }
 
     private void Attack()
