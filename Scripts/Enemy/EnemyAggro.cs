@@ -2,25 +2,30 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Enemy))]
+[RequireComponent (typeof(EnemyPatrul))]
 
 public class EnemyAggro : MonoBehaviour
 {
-    private Enemy _enemy;
+    private Transform _target;
+    private EnemyPatrul _enemyPatrul;
 
-    public event Action<Transform> PlayerDetected;
     public event Action<bool> PlayerEnteredAggroZone;
+    public event Action<bool> PlayerExitAggroZone;
+
+    public  bool IsHaveAggro { get; private set; }
 
     private void Awake()
     {
-        _enemy = GetComponent<Enemy>();
+        _enemyPatrul = GetComponent<EnemyPatrul>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.TryGetComponent<Player>(out Player player))
         {
-            PlayerEnteredAggroZone?.Invoke(true);
-            PlayerDetected?.Invoke(player.transform);
+            IsHaveAggro = true;
+            _target = collision.gameObject.transform;
+            PlayerEnteredAggroZone?.Invoke(IsHaveAggro);
         }
     }
 
@@ -28,7 +33,23 @@ public class EnemyAggro : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent<Player>(out Player player))
         {
-            PlayerEnteredAggroZone?.Invoke(false);
+            IsHaveAggro = false;
+            PlayerExitAggroZone?.Invoke(IsHaveAggro);
+        }
+    }
+
+    private void Update()
+    {
+        if (IsHaveAggro)
+        {
+            Vector3 direction = (_target.position - transform.position).normalized;
+
+            if (direction.x != 0)
+            {
+                transform.localScale = new Vector3(Mathf.Sign(direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
+
+            transform.position = Vector3.MoveTowards(transform.position, _target.position, _enemyPatrul.Speed * Time.deltaTime);
         }
     }
 }

@@ -9,13 +9,12 @@ public class Player : MonoBehaviour, IDamagable
     [SerializeField] private float _attackRange;
     [SerializeField] private LayerMask _layerMask;
 
+    private Movement _movement;
+
     public int Coins { get; private set; }
     public float CurrentHealth { get; private set; }
-    public float MaxHealth { get; private set; }
     public float Damage { get; private set; }
     public float AttackRange { get; private set; }
-
-    private Movement _movement;
 
     private void Awake()
     {
@@ -30,14 +29,6 @@ public class Player : MonoBehaviour, IDamagable
         CurrentHealth = _maxHealth;       
     }
 
-    private void Update()
-    {
-        if (CurrentHealth <= 0)
-        {
-            Destroy(gameObject);
-        }
-    }
-
     private void OnDestroy()
     {
         _movement.Attacked -= Attack;
@@ -50,6 +41,7 @@ public class Player : MonoBehaviour, IDamagable
             iPickupable.Pickup();
             Coins++;
         }
+
         if (collision.gameObject.TryGetComponent<HealthBox>(out HealthBox healthBox))
         {
             TakeHealingBox(healthBox.HealingAmount);
@@ -59,20 +51,15 @@ public class Player : MonoBehaviour, IDamagable
 
     private void TakeHealingBox(float amountHealing)
     {
-        Debug.Log(CurrentHealth);
         CurrentHealth += amountHealing;
-        Debug.Log(CurrentHealth);
 
         if (CurrentHealth > _maxHealth)
             CurrentHealth = _maxHealth;
-        Debug.Log(CurrentHealth);
-
     }
 
     private void Attack()
     {
         Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, AttackRange, _layerMask);
-
 
         if (targets != null)
         {
@@ -89,6 +76,12 @@ public class Player : MonoBehaviour, IDamagable
 
     public void TakeDamage(float damage)
     {
+        if(damage > 0)
         CurrentHealth -= damage;
+
+        if (CurrentHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }

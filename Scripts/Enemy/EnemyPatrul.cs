@@ -13,64 +13,41 @@ public class EnemyPatrul : MonoBehaviour
 
     private int _numberPoint;
     private float _arrivalThreshold = 0.3f;
-    private bool _isHaveAggro;
+
+    public float Speed { get; private set; }
 
     private void Awake()
     {
+        Speed = _speed;
         _enemyAggro = GetComponent<EnemyAggro>();
-    }
-
-    private void OnEnable()
-    {
-        _enemyAggro.PlayerEnteredAggroZone += AggroChange;
-        _enemyAggro.PlayerDetected += AggroInPlayer;
-    }
-
-    private void OnDisable()
-    {
-        _enemyAggro.PlayerEnteredAggroZone -= AggroChange;
-        _enemyAggro.PlayerDetected -= AggroInPlayer;
     }
 
     private void Update()
     {
-        if (_isHaveAggro == false)
+        if (_enemyAggro.IsHaveAggro == false)
         {
             _target = _allPlacesPoint[_numberPoint];
-        }
 
-        Vector3 direction = (_target.position - transform.position).normalized;
+            Vector3 direction = (_target.position - transform.position).normalized;
 
-        if (direction.x != 0)
-        {
-            transform.localScale = new Vector3(Mathf.Sign(direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-        }
+            if (direction.x != 0)
+            {
+                transform.localScale = new Vector3(Mathf.Sign(direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
+            }
 
-        transform.position = Vector3.MoveTowards(transform.position, _target.position, _speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _target.position, Speed * Time.deltaTime);
 
-        if (Vector3.Distance(transform.position, _target.position) < _arrivalThreshold)
-        {
-            NextPoint();
+            if (Vector3.Distance(transform.position, _target.position) < _arrivalThreshold)
+            {
+                NextPoint();
+            }
         }
     }
 
     private void NextPoint()
     {
-        _numberPoint++;
-
-        if (_numberPoint == _allPlacesPoint.Length)
-            _numberPoint = 0;
+        _numberPoint = (++_numberPoint) % _allPlacesPoint.Length;
 
         _target = _allPlacesPoint[_numberPoint].transform;
-    }
-
-    private void AggroInPlayer(Transform target)
-    {
-        _target = target;
-    }
-
-    private void AggroChange(bool isHaveAggro)
-    {
-        _isHaveAggro = isHaveAggro;
     }
 }

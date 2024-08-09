@@ -8,7 +8,7 @@ public class Movement : MonoBehaviour
     private const KeyCode CommandJump = KeyCode.Space;
     private const KeyCode CommandAttack = KeyCode.Mouse0;
 
-    public readonly string Horizontal = "Horizontal";
+    private readonly string Horizontal = "Horizontal";
 
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
