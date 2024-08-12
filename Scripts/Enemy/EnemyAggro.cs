@@ -9,9 +9,6 @@ public class EnemyAggro : MonoBehaviour
     private Transform _target;
     private EnemyPatrul _enemyPatrul;
 
-    public event Action<bool> PlayerEnteredAggroZone;
-    public event Action<bool> PlayerExitAggroZone;
-
     public  bool IsHaveAggro { get; private set; }
 
     private void Awake()
@@ -25,7 +22,6 @@ public class EnemyAggro : MonoBehaviour
         {
             IsHaveAggro = true;
             _target = collision.gameObject.transform;
-            PlayerEnteredAggroZone?.Invoke(IsHaveAggro);
         }
     }
 
@@ -34,7 +30,6 @@ public class EnemyAggro : MonoBehaviour
         if (collision.gameObject.TryGetComponent<Player>(out Player player))
         {
             IsHaveAggro = false;
-            PlayerExitAggroZone?.Invoke(IsHaveAggro);
         }
     }
 

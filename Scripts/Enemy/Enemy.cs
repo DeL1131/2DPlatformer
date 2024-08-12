@@ -8,10 +8,12 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected float Damage;
     [SerializeField] protected float AttackRange;
     [SerializeField] protected LayerMask LayerMask;
-    [SerializeField] private float attackCooldown = 1.0f;
+    [SerializeField] protected float AttackInterval;
 
-    private float deathDelay = 0.3f;
+    private float _deathDelay = 0.3f;
     private bool _isHaveTrigger;
+
+    private float _attackCooldown = 0.0f;
 
     public event Action Died;
     public event Action Attacked;
@@ -25,6 +27,11 @@ public abstract class Enemy : MonoBehaviour
         CurrentHealth = MaxHeallth;
         CurrentDamage = Damage;
         CurrentAttackRange = AttackRange;
+    }
+
+    private void FixedUpdate()
+    {
+        _attackCooldown -= Time.fixedDeltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -43,17 +50,19 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (_isHaveTrigger)
-        {
-            Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, AttackRange, LayerMask);
+        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, AttackRange, LayerMask);
 
-            foreach (Collider2D target in targets)
+        foreach (Collider2D target in targets)
+        {
+            if (LayerMask == (LayerMask | (1 << target.gameObject.layer)) && target.gameObject.TryGetComponent(out IDamagable damagable))
             {
-                if (LayerMask == (LayerMask | (1 << target.gameObject.layer)) && target.gameObject.TryGetComponent(out IDamagable damagable))
+                if (_attackCooldown <= 0)
                 {
+                    Debug.Log(Damage);
                     Attack(damagable);
+                    _attackCooldown = AttackInterval;
                 }
             }
         }
@@ -73,7 +82,7 @@ public abstract class Enemy : MonoBehaviour
 
     private IEnumerator StartEnemyDeath()
     {
-        WaitForSeconds waitForSeconds = new WaitForSeconds(deathDelay);
+        WaitForSeconds waitForSeconds = new WaitForSeconds(_deathDelay);
 
         yield return waitForSeconds;
         Destroy(gameObject);
