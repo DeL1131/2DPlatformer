@@ -60,7 +60,6 @@ public abstract class Enemy : MonoBehaviour
             {
                 if (_attackCooldown <= 0)
                 {
-                    Debug.Log(Damage);
                     Attack(damagable);
                     _attackCooldown = AttackInterval;
                 }
