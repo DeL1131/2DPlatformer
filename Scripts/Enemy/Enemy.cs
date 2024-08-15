@@ -2,36 +2,37 @@ using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Health))]
+[RequireComponent (typeof(EnemyAttack))]
+
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] protected float MaxHeallth;
-    [SerializeField] protected float Damage;
-    [SerializeField] protected float AttackRange;
-    [SerializeField] protected LayerMask LayerMask;
-    [SerializeField] protected float AttackInterval;
+    [SerializeField] protected float Damage;    
 
-    private float _deathDelay = 0.3f;
+    protected Health _health;
+    private EnemyAttack _enemyAttack;
+    private float _deathDelay = 0.3f;    
     private bool _isHaveTrigger;
-
-    private float _attackCooldown = 0.0f;
 
     public event Action Died;
     public event Action Attacked;
 
-    public float CurrentHealth { get; protected set; }
     public float CurrentDamage { get; private set; }
-    public float CurrentAttackRange { get; private set; }
 
     private void Awake()
     {
-        CurrentHealth = MaxHeallth;
+        _health = GetComponent<Health>();
+        _enemyAttack = GetComponent<EnemyAttack>();
+
         CurrentDamage = Damage;
-        CurrentAttackRange = AttackRange;
+        _health.HealhChanged += ChackHealth;
+        _enemyAttack.Attacked += Attack;
     }
 
-    private void FixedUpdate()
+    private void OnDisable()
     {
-        _attackCooldown -= Time.fixedDeltaTime;
+        _health.HealhChanged -= ChackHealth;
+        _enemyAttack.Attacked -= Attack;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -50,33 +51,19 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, AttackRange, LayerMask);
-
-        foreach (Collider2D target in targets)
-        {
-            if (LayerMask == (LayerMask | (1 << target.gameObject.layer)) && target.gameObject.TryGetComponent(out IDamagable damagable))
-            {
-                if (_attackCooldown <= 0)
-                {
-                    Attack(damagable);
-                    _attackCooldown = AttackInterval;
-                }
-            }
-        }
-
-        if (CurrentHealth <= 0)
-        {
-            Died?.Invoke();
-            StartCoroutine(StartEnemyDeath());
-        }
-    }
-
     private void Attack(IDamagable damagable)
     {
         Attacked?.Invoke();
         damagable.TakeDamage(CurrentDamage);
+    }
+
+    private void ChackHealth(float currentHealth)
+    {
+        if (_health.CurrentHealth <= 0)
+        {
+            Died?.Invoke();
+            StartCoroutine(StartEnemyDeath());
+        }
     }
 
     private IEnumerator StartEnemyDeath()

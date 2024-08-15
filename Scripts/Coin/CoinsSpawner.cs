@@ -8,7 +8,6 @@ public class CoinsSpawner : MonoBehaviour
     [SerializeField] private Transform[] _pointsSpawn;
 
     private ObjectPool<Coin> _pool;
-
     private int _numberOfPoint;
     private int _maxCoins;
     private int _coinsSpawned;

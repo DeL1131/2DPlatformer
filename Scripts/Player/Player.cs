@@ -1,87 +1,72 @@
+using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Movement))]
+[RequireComponent(typeof(InputManager))]
+[RequireComponent (typeof(Health))]
+[RequireComponent(typeof(CoinPickUp))]
+[RequireComponent(typeof(HealthBoxPickUp))]
+
 
 public class Player : MonoBehaviour, IDamagable
 {
-    [SerializeField] private float _maxHealth;
     [SerializeField] private float _damage;
     [SerializeField] private float _attackRange;
     [SerializeField] private LayerMask _layerMask;
 
-    private Movement _movement;
+    private InputManager _inputManager;
+    private Health _health;
+    private CoinPickUp _coinPickUp;
+    private HealthBoxPickUp _healthBoxPickUp;
 
+    public event Action<float> Damaged;
+
+    public LayerMask LayerMask => _layerMask;
     public int Coins { get; private set; }
-    public float CurrentHealth { get; private set; }
     public float Damage { get; private set; }
     public float AttackRange { get; private set; }
 
     private void Awake()
     {
-        _movement = GetComponent<Movement>();
+        _inputManager = GetComponent<InputManager>();
+        _health = GetComponent<Health>();
+        _coinPickUp = GetComponent<CoinPickUp>();
+        _healthBoxPickUp = GetComponent<HealthBoxPickUp>();
+
+        _health.HealhChanged += ChackHealth;
+        _coinPickUp.PickUp += ChangeCoinAmaunt;
+        _healthBoxPickUp.PickUp += Healing;
+
         Damage = _damage;
         AttackRange = _attackRange;
-        _movement.Attacked += Attack;
-    }
-
-    private void Start()
-    {
-        CurrentHealth = _maxHealth;       
     }
 
     private void OnDestroy()
     {
-        _movement.Attacked -= Attack;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.TryGetComponent(out IPickupable iPickupable))
-        {
-            iPickupable.Pickup();
-            Coins++;
-        }
-
-        if (collision.gameObject.TryGetComponent<HealthBox>(out HealthBox healthBox))
-        {
-            TakeHealingBox(healthBox.HealingAmount);
-            healthBox.Pickup();
-        }
-    }
-
-    private void TakeHealingBox(float amountHealing)
-    {
-        CurrentHealth += amountHealing;
-
-        if (CurrentHealth > _maxHealth)
-            CurrentHealth = _maxHealth;
-    }
-
-    private void Attack()
-    {
-        Collider2D[] targets = Physics2D.OverlapCircleAll(transform.position, AttackRange, _layerMask);
-
-        if (targets != null)
-        {
-            foreach (Collider2D target in targets)
-            {
-                if (target.gameObject.TryGetComponent(out IDamagable damagable))
-                {
-                    damagable.TakeDamage(Damage);
-                    return;
-                }
-            }
-        }
+        _health.HealhChanged -= ChackHealth;
+        _coinPickUp.PickUp -= ChangeCoinAmaunt;
+        _healthBoxPickUp.PickUp -= Healing;
     }
 
     public void TakeDamage(float damage)
-    {
-        if(damage > 0)
-        CurrentHealth -= damage;
+    {        
+        Damaged?.Invoke(damage);
+    }
 
-        if (CurrentHealth <= 0)
+    private void ChackHealth(float currentHealth)
+    {
+        if (_health.CurrentHealth <= 0)
         {
-            Destroy(gameObject);
+            Destroy(gameObject);          
         }
+    }
+
+    private void ChangeCoinAmaunt()
+    {
+        Coins++;
+    }
+    
+    private void Healing(float healAmount)
+    {
+        _health.Healing(healAmount);
     }
 }

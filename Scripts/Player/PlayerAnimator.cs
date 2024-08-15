@@ -1,30 +1,34 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-[RequireComponent (typeof(Movement))]
+[RequireComponent (typeof(Mover))]
+[RequireComponent(typeof(InputManager))]
+
 
 public class PlayerAnimator : MonoBehaviour
 {
     private Animator _animator;
-    private Movement _movement;
+    private Mover _movement;
+    private InputManager _inputManager;
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
-        _movement = GetComponent<Movement>();
+        _movement = GetComponent<Mover>();
+        _inputManager = GetComponent<InputManager>();
     }
 
     private void OnEnable()
     {
-        _movement.Jumped += PlayJumpAnimation;
-        _movement.Attacked += PlayAttackAnimation;
+        _inputManager.SpacePressed += PlayJumpAnimation;
+        _inputManager.Mouse0Pressed += PlayAttackAnimation;
         _movement.Running += PlayerRunningAnimation;
     }
 
     private void OnDisable()
     {
-        _movement.Jumped -= PlayJumpAnimation;
-        _movement.Attacked -= PlayAttackAnimation;
+        _inputManager.SpacePressed -= PlayJumpAnimation;
+        _inputManager.Mouse0Pressed -= PlayAttackAnimation;
         _movement.Running -= PlayerRunningAnimation;
     }
 

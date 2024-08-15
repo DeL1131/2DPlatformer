@@ -12,6 +12,7 @@ public abstract class EnemyAnimator : MonoBehaviour
     {
         Enemy = GetComponent<Enemy>();
         Animator = GetComponent<Animator>();
+
         Enemy.Died += PlayEnemyDeathAnimation;
         Enemy.Attacked += PlayEnemyAttackAnimation;
     }
