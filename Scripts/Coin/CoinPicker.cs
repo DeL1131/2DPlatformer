@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class CoinPickUp : MonoBehaviour
+public class CoinPicker : MonoBehaviour
 {
     public event Action PickUp;
 

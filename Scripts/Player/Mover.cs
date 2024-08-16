@@ -2,39 +2,38 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(InputManager))]
+[RequireComponent(typeof(PlayerInput))]
 
 public class Mover : MonoBehaviour
 {
-    private readonly string Horizontal = "Horizontal";
 
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
 
     private Rigidbody2D _rigidbody;
-    private InputManager _inputManager;
+    private PlayerInput _inputManager;
 
     public event Action<bool> Running;
-    public event Action<Vector3> RotationRequested;
 
     public Vector3 Direction { get; private set; }
 
     private void Start()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _inputManager = GetComponent<InputManager>();
+        _inputManager = GetComponent<PlayerInput>();
+
         _inputManager.SpacePressed += Jump;
+        _inputManager.OnDirectionInput += GetDirection;
     }
 
     private void OnDisable()
     {
         _inputManager.SpacePressed -= Jump;
+        _inputManager.OnDirectionInput -= GetDirection;
     }
 
     private void FixedUpdate()
     {
-        Direction = new Vector2(Input.GetAxis(Horizontal), 0f);
-
         transform.Translate(_speed * Time.deltaTime * Direction);
 
         if (Direction.x != 0)
@@ -51,5 +50,10 @@ public class Mover : MonoBehaviour
     {
         _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, 0f);
         _rigidbody.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void GetDirection(Vector3 direction)
+    {
+        Direction = direction;
     }
 }

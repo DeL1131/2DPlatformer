@@ -2,33 +2,34 @@ using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent (typeof(Mover))]
-[RequireComponent(typeof(InputManager))]
-
+[RequireComponent(typeof(PlayerInput))]
 
 public class PlayerAnimator : MonoBehaviour
 {
     private Animator _animator;
     private Mover _movement;
-    private InputManager _inputManager;
+    private PlayerInput _playerInput;
+    private Attacker _attacker;
 
     private void Awake()
     {
+        _attacker = GetComponent<Attacker>();
         _animator = GetComponent<Animator>();
         _movement = GetComponent<Mover>();
-        _inputManager = GetComponent<InputManager>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     private void OnEnable()
     {
-        _inputManager.SpacePressed += PlayJumpAnimation;
-        _inputManager.Mouse0Pressed += PlayAttackAnimation;
+        _playerInput.SpacePressed += PlayJumpAnimation;
+        _playerInput.Mouse0Pressed += PlayAttackAnimation;
         _movement.Running += PlayerRunningAnimation;
     }
 
     private void OnDisable()
     {
-        _inputManager.SpacePressed -= PlayJumpAnimation;
-        _inputManager.Mouse0Pressed -= PlayAttackAnimation;
+        _playerInput.SpacePressed -= PlayJumpAnimation;
+        _playerInput.Mouse0Pressed -= PlayAttackAnimation;
         _movement.Running -= PlayerRunningAnimation;
     }
 
@@ -38,9 +39,8 @@ public class PlayerAnimator : MonoBehaviour
     }
 
     private void PlayAttackAnimation()
-    {
-        _animator.Play(AnimatorData.Params.Attack);
-        
+    {        
+            _animator.Play(AnimatorData.Params.Attack);       
     }
 
     private void PlayerRunningAnimation(bool isRunning)

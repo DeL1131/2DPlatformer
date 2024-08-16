@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(InputManager))]
+[RequireComponent(typeof(PlayerInput))]
 [RequireComponent (typeof(Health))]
-[RequireComponent(typeof(CoinPickUp))]
-[RequireComponent(typeof(HealthBoxPickUp))]
-
+[RequireComponent(typeof(CoinPicker))]
+[RequireComponent(typeof(HealthBoxPicker))]
+[RequireComponent(typeof(Attacker))]
 
 public class Player : MonoBehaviour, IDamagable
 {
@@ -13,10 +13,11 @@ public class Player : MonoBehaviour, IDamagable
     [SerializeField] private float _attackRange;
     [SerializeField] private LayerMask _layerMask;
 
-    private InputManager _inputManager;
+    private Attacker _attacker;
+    private PlayerInput _playerInput;
     private Health _health;
-    private CoinPickUp _coinPickUp;
-    private HealthBoxPickUp _healthBoxPickUp;
+    private CoinPicker _coinPickUp;
+    private HealthBoxPicker _healthBoxPickUp;
 
     public event Action<float> Damaged;
 
@@ -27,12 +28,14 @@ public class Player : MonoBehaviour, IDamagable
 
     private void Awake()
     {
-        _inputManager = GetComponent<InputManager>();
+        _attacker = GetComponent<Attacker>();
+        _playerInput = GetComponent<PlayerInput>();
         _health = GetComponent<Health>();
-        _coinPickUp = GetComponent<CoinPickUp>();
-        _healthBoxPickUp = GetComponent<HealthBoxPickUp>();
+        _coinPickUp = GetComponent<CoinPicker>();
+        _healthBoxPickUp = GetComponent<HealthBoxPicker>();
 
-        _health.HealhChanged += ChackHealth;
+        _playerInput.Mouse0Pressed += Attack;
+        _health.HealhChanged += VerifyHealth;
         _coinPickUp.PickUp += ChangeCoinAmaunt;
         _healthBoxPickUp.PickUp += Healing;
 
@@ -42,7 +45,7 @@ public class Player : MonoBehaviour, IDamagable
 
     private void OnDestroy()
     {
-        _health.HealhChanged -= ChackHealth;
+        _health.HealhChanged -= VerifyHealth;
         _coinPickUp.PickUp -= ChangeCoinAmaunt;
         _healthBoxPickUp.PickUp -= Healing;
     }
@@ -52,7 +55,7 @@ public class Player : MonoBehaviour, IDamagable
         Damaged?.Invoke(damage);
     }
 
-    private void ChackHealth(float currentHealth)
+    private void VerifyHealth(float currentHealth)
     {
         if (_health.CurrentHealth <= 0)
         {
@@ -68,5 +71,11 @@ public class Player : MonoBehaviour, IDamagable
     private void Healing(float healAmount)
     {
         _health.Healing(healAmount);
+    }
+
+    private void Attack()
+    {
+        if (_attacker.AttackCooldown <= 0)
+            _attacker.Attack(LayerMask, AttackRange, Damage);
     }
 }

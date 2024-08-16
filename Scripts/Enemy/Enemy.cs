@@ -3,63 +3,48 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Health))]
-[RequireComponent (typeof(EnemyAttack))]
+[RequireComponent (typeof(Attacker))]
 
 public abstract class Enemy : MonoBehaviour
 {
-    [SerializeField] protected float Damage;    
+    [SerializeField] protected float Damage;
+    [SerializeField] protected float AttackRange;
+    [SerializeField] protected LayerMask LayerMask;
 
-    protected Health _health;
-    private EnemyAttack _enemyAttack;
+    protected Health Health;
+
+    private Attacker _attacker;
     private float _deathDelay = 0.3f;    
-    private bool _isHaveTrigger;
 
     public event Action Died;
-    public event Action Attacked;
 
     public float CurrentDamage { get; private set; }
 
     private void Awake()
     {
-        _health = GetComponent<Health>();
-        _enemyAttack = GetComponent<EnemyAttack>();
+        Health = GetComponent<Health>();
+        _attacker = GetComponent<Attacker>();
 
         CurrentDamage = Damage;
-        _health.HealhChanged += ChackHealth;
-        _enemyAttack.Attacked += Attack;
+        Health.HealhChanged += VerifyHealth;
     }
 
     private void OnDisable()
     {
-        _health.HealhChanged -= ChackHealth;
-        _enemyAttack.Attacked -= Attack;
+        Health.HealhChanged -= VerifyHealth;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out IDamagable damagable))
+        if(collision.gameObject.TryGetComponent(out IDamagable damageble) && collision.gameObject.TryGetComponent<Player>(out Player _))
         {
-            _isHaveTrigger = true;
+            _attacker.Attack(LayerMask, AttackRange, Damage);
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void VerifyHealth(float currentHealth)
     {
-        if (collision.gameObject.TryGetComponent(out IDamagable damagable))
-        {
-            _isHaveTrigger = false;
-        }
-    }
-
-    private void Attack(IDamagable damagable)
-    {
-        Attacked?.Invoke();
-        damagable.TakeDamage(CurrentDamage);
-    }
-
-    private void ChackHealth(float currentHealth)
-    {
-        if (_health.CurrentHealth <= 0)
+        if (Health.CurrentHealth <= 0)
         {
             Died?.Invoke();
             StartCoroutine(StartEnemyDeath());

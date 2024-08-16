@@ -16,31 +16,33 @@ public class Health : MonoBehaviour
     private void Start()
     {
         CurrentHealth = _maxHealth;
+        _damagable = GetComponent<IDamagable>();
 
-        if (gameObject.TryGetComponent(out IDamagable damagable))
-            _damagable = damagable;
-
-        _damagable.Damaged += ChangeHealth;
+        _damagable.Damaged += DamageHealth;
     }
 
     private void OnDisable()
     {
-        _damagable.Damaged -= ChangeHealth;
+        _damagable.Damaged -= DamageHealth;
     }
 
-    public void ChangeHealth(float damage)
+    public void DamageHealth(float damage)
     {
-        if (damage > 0)
+        if (damage >= 0)
+        {
             CurrentHealth -= damage;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, _maxHealth);
 
-        HealhChanged?.Invoke(CurrentHealth);
+            HealhChanged?.Invoke(CurrentHealth);
+        }
     }
 
     public void Healing(float healAmount)
     {
-        CurrentHealth += healAmount;
-
-        if (CurrentHealth > _maxHealth)
-            CurrentHealth = _maxHealth;
+        if (healAmount >= 0)
+        {
+            CurrentHealth += healAmount;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, _maxHealth);
+        }
     }
 }

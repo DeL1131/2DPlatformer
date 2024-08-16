@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class HealthBoxPickUp : MonoBehaviour
+public class HealthBoxPicker : MonoBehaviour
 {
     public event Action<float> PickUp;
 

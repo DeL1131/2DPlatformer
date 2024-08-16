@@ -6,6 +6,6 @@ public class EnemyGhost : Enemy , IDamagable
 
     public void TakeDamage(float damage)
     {
-        _health.ChangeHealth(damage);
+        Health.DamageHealth(damage);
     }
 }
