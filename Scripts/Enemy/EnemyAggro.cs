@@ -37,11 +37,7 @@ public class EnemyAggro : MonoBehaviour
         if (IsHaveAggro)
         {
             Vector3 direction = (_target.position - transform.position).normalized;
-
-            if (direction.x != 0)
-            {
-                transform.localScale = new Vector3(Mathf.Sign(direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
+            _enemyPatrul.GetDirection(direction);
 
             transform.position = Vector3.MoveTowards(transform.position, _target.position, _enemyPatrul.Speed * Time.deltaTime);
         }

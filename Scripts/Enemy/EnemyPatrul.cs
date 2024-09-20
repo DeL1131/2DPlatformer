@@ -1,19 +1,20 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Enemy))]
 [RequireComponent(typeof(EnemyAggro))]
 
-public class EnemyPatrul : MonoBehaviour
+public class EnemyPatrul : MonoBehaviour, IFlippable
 {
     [SerializeField] private Transform[] _allPlacesPoint;
     [SerializeField] private float _speed;
 
     private Vector3 _target;
     private EnemyAggro _enemyAggro;
+
     private int _numberPoint;
     private float _arrivalThreshold = 0.3f;
 
+    public Vector3 Direction { get; private set; }
     public float Speed { get; private set; }
 
     private void Awake()
@@ -28,12 +29,7 @@ public class EnemyPatrul : MonoBehaviour
         {
             _target = _allPlacesPoint[_numberPoint].transform.position;
 
-            Vector3 direction = (_target - transform.position).normalized;
-
-            if (direction.x != 0)
-            {
-                transform.localScale = new Vector3(Mathf.Sign(direction.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
-            }
+            Direction = (_target - transform.position).normalized;
 
             transform.position = Vector3.MoveTowards(transform.position, _target, Speed * Time.deltaTime);
 
@@ -42,6 +38,11 @@ public class EnemyPatrul : MonoBehaviour
                 NextPoint();
             }
         }
+    }
+
+    public void GetDirection(Vector3 direction)
+    {
+        Direction = direction;
     }
 
     public bool IsTargetReached()

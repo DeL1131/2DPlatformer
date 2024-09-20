@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
 
-public class Mover : MonoBehaviour
+public class Mover : MonoBehaviour, IFlippable
 {
 
     [SerializeField] private float _speed;

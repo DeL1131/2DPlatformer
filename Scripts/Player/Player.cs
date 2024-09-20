@@ -20,6 +20,7 @@ public class Player : MonoBehaviour, IDamagable
     private HealthBoxPicker _healthBoxPickUp;
 
     public event Action<float> Damaged;
+    public event Action<float> HealthChanged;
 
     public LayerMask LayerMask => _layerMask;
     public int Coins { get; private set; }
@@ -50,6 +51,11 @@ public class Player : MonoBehaviour, IDamagable
         _healthBoxPickUp.PickUp -= Healing;
     }
 
+    public Health GetHealth()
+    {
+        return _health;
+    }
+
     public void TakeDamage(float damage)
     {        
         Damaged?.Invoke(damage);
@@ -57,6 +63,8 @@ public class Player : MonoBehaviour, IDamagable
 
     private void VerifyHealth(float currentHealth)
     {
+        HealthChanged?.Invoke(currentHealth);
+
         if (_health.CurrentHealth <= 0)
         {
             Destroy(gameObject);          
