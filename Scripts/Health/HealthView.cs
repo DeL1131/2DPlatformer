@@ -10,8 +10,6 @@ public class HealthView : MonoBehaviour
 
     private Image _image;
 
-    private readonly int HeartAnimationTrigger = Animator.StringToHash("HeartAnimation");
-
     private void OnEnable()
     {
         _health.HealhChanged += TakeDamage;

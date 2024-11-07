@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class Mover : MonoBehaviour, IFlippable
 {
-
     [SerializeField] private float _speed;
     [SerializeField] private float _jumpForce;
 
@@ -17,7 +16,7 @@ public class Mover : MonoBehaviour, IFlippable
 
     public Vector3 Direction { get; private set; }
 
-    private void Start()
+    private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _inputManager = GetComponent<PlayerInput>();

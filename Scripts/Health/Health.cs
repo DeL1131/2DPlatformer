@@ -15,7 +15,7 @@ public class Health : MonoBehaviour
 
     public float MaxHealth => _maxHealth;
 
-    private void Start()
+    private void Awake()
     {
         CurrentHealth = _maxHealth;
         _damagable = GetComponent<IDamagable>();

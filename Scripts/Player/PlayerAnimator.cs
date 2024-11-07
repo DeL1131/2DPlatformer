@@ -9,11 +9,9 @@ public class PlayerAnimator : MonoBehaviour
     private Animator _animator;
     private Mover _movement;
     private PlayerInput _playerInput;
-    private Attacker _attacker;
 
     private void Awake()
     {
-        _attacker = GetComponent<Attacker>();
         _animator = GetComponent<Animator>();
         _movement = GetComponent<Mover>();
         _playerInput = GetComponent<PlayerInput>();

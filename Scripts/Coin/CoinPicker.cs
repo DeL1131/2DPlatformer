@@ -7,10 +7,10 @@ public class CoinPicker : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out IPickupable iPickupable))
+        if (collision.gameObject.TryGetComponent(out IPickupable pickupable))
         {
             PickUp?.Invoke();
-            iPickupable.Pickup();           
+            pickupable.Pickup();           
         }
     }
 }

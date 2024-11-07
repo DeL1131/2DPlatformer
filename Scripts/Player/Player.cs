@@ -7,7 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(HealthBoxPicker))]
 [RequireComponent(typeof(Attacker))]
 
-public class Player : MonoBehaviour, IDamagable
+public class Player : MonoBehaviour, IDamagable, IHealeble
 {
     [SerializeField] private float _damage;
     [SerializeField] private float _attackRange;
@@ -51,11 +51,6 @@ public class Player : MonoBehaviour, IDamagable
         _healthBoxPickUp.PickUp -= Healing;
     }
 
-    public Health GetHealth()
-    {
-        return _health;
-    }
-
     public void TakeDamage(float damage)
     {        
         Damaged?.Invoke(damage);
@@ -76,7 +71,7 @@ public class Player : MonoBehaviour, IDamagable
         Coins++;
     }
     
-    private void Healing(float healAmount)
+    public void Healing(float healAmount)
     {
         _health.Healing(healAmount);
     }

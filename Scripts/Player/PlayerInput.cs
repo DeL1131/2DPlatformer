@@ -1,25 +1,31 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [RequireComponent(typeof(Attacker))]
+[RequireComponent (typeof(SkillLifeSteal))]
 
 public class PlayerInput : MonoBehaviour
 {
     private const KeyCode CommandJump = KeyCode.Space;
     private const KeyCode CommandAttack = KeyCode.Mouse0;
+    private const KeyCode CommandUseLifeStealAbility = KeyCode.Alpha1;
 
     private readonly string Horizontal = "Horizontal";
 
     private Vector3 _direction;
     private Attacker _attacker;
+    private SkillLifeSteal _skillLifeSteal;
 
     public event Action SpacePressed;
     public event Action Mouse0Pressed;
     public event Action<Vector3> OnDirectionInput;
+    public event Action UseLifeStealAbility;
 
-    private void Start()
+    private void Awake()
     {
         _attacker = GetComponent<Attacker>();
+        _skillLifeSteal = GetComponent<SkillLifeSteal>();
     }
 
     private void Update()
@@ -36,6 +42,12 @@ public class PlayerInput : MonoBehaviour
         if (Input.GetKeyDown(CommandJump))
         {
             SpacePressed?.Invoke();
+        }
+
+        if (Input.GetKeyDown(CommandUseLifeStealAbility))
+        {
+            if(_skillLifeSteal.CurrentCooldown <= 0)
+            UseLifeStealAbility?.Invoke();
         }
     }
 }
