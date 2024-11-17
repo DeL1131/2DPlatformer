@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,22 +7,26 @@ using UnityEngine;
 
 public class SkillLifeSteal : MonoBehaviour
 {
+    [SerializeField] private float _healingAmount = 5;
+    [SerializeField] private float _damage = 5;
+
     private float _duration = 6f;
     private float _currentDuration = 0;
-    private float _healingAmount = 5;
-    private float _damage = 5;
     private float _damageInterval = 1f;
     private float _currentInterval = 0;
+    private bool _isAbilityActive = false;
+    private bool _isCorotineActive = false;
 
     private PlayerInput _playerInput;
     private Player _player;
     private Collider2D _target;
     private List<Collider2D> _findedTargets = new List<Collider2D>();
-    private IDamagable _iDamagable;
+    private Coroutine _myCorotine;
+
+    public event Action<bool> ActiveAbilityChange;
 
     public float AbilityRange { get; private set; } = 1.5f;
     public float Cooldown { get; private set; } = 10;
-    public bool IsAbilityActive { get; private set; } = false;
     public float CurrentCooldown { get; private set; } = 0;
 
     private void Awake()
@@ -42,31 +47,51 @@ public class SkillLifeSteal : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _currentInterval += Time.fixedDeltaTime;
-        _currentDuration -= Time.fixedDeltaTime;
         CurrentCooldown -= Time.fixedDeltaTime;
+        _currentDuration -= Time.fixedDeltaTime;
 
-        if (IsAbilityActive)
+        if (_isAbilityActive)
         {
             FindTargets();
         }
 
-        if (IsAbilityActive && _target != null && _iDamagable != null && _currentInterval >= _damageInterval)
+        if (_isAbilityActive && _target != null)
         {
-            DamagePerInterval();
+            if (!_isCorotineActive)
+            {
+                _isCorotineActive = true;
+                _myCorotine = StartCoroutine(DamagePerInterval());
+            }
+        }
+
+        if (_target == null)
+        {
+            if (_isCorotineActive)
+            {
+                _isCorotineActive = false;
+                StopCoroutine(_myCorotine);
+            }
         }
 
         if (_currentDuration <= 0)
         {
-            DeactivetedAbility();
+            _isAbilityActive = DeactivetedAbility();
+
+            if (_isCorotineActive && _myCorotine != null)
+            {
+                StopCoroutine(_myCorotine);
+                _isCorotineActive = false;
+            }
         }
     }
 
     private void ActivetedAbility()
     {
-        IsAbilityActive = true;
+        _isAbilityActive = true;
         CurrentCooldown = Cooldown;
         _currentDuration = _duration;
+
+        ActiveAbilityChange?.Invoke(_isAbilityActive);
     }
 
     public void FindTargets()
@@ -91,47 +116,52 @@ public class SkillLifeSteal : MonoBehaviour
 
     private void FindClosestTarget(List<Collider2D> targets)
     {
-        if (targets.Count > 1)
-        {
-            float currentDistance;
-            float closestEnemy = Mathf.Infinity;
-
-            foreach (Collider2D target in targets)
-            {
-                currentDistance = Vector3Extensions.SqrDistance(transform.position, target.transform.position);
-
-                if (currentDistance < closestEnemy)
-                {
-                    closestEnemy = currentDistance;
-                    _target = target;
-                }
-            }
-        }
-        else if (targets.Count == 1)
+        if (targets.Count == 1)
         {
             _target = targets[0];
+            return;
         }
 
         if (targets.Count == 0)
         {
             _target = null;
-            _iDamagable = null;
+            return;
         }
-        else if (_target != null && _target.gameObject.TryGetComponent(out IDamagable iDamagable))
+
+        float currentDistance;
+        float closestEnemy = Mathf.Infinity;
+
+        foreach (Collider2D target in targets)
         {
-            _iDamagable = iDamagable;
+            currentDistance = Vector3Extensions.SqrDistance(transform.position, target.transform.position);
+
+            if (currentDistance < closestEnemy)
+            {
+                closestEnemy = currentDistance;
+                _target = target;
+            }
         }
     }
 
-    private void DamagePerInterval()
+    private bool DeactivetedAbility()
     {
-        _currentInterval = 0;
-        _iDamagable.TakeDamage(_damage);
-        _player.Healing(_healingAmount);
+        ActiveAbilityChange?.Invoke(_isAbilityActive);
+        return false;
     }
 
-    private void DeactivetedAbility()
+    private IEnumerator<WaitForSeconds> DamagePerInterval()
     {
-        IsAbilityActive = false;
+        WaitForSeconds waitForSeconds = new WaitForSeconds(_damageInterval);
+
+        while (_isCorotineActive)
+        {
+            if (_target.gameObject.TryGetComponent(out IDamagable iDamagable))
+            {
+                iDamagable.TakeDamage(_damage);
+                _player.Healing(_healingAmount);
+            }
+
+            yield return waitForSeconds;
+        }
     }
 }
