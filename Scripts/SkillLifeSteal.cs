@@ -164,4 +164,14 @@ public class SkillLifeSteal : MonoBehaviour
             yield return waitForSeconds;
         }
     }
+
+    private IEnumerator<WaitForFixedUpdate> AbilityTimerRoutine(float start, float end)
+    {
+        WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+
+        while (start > 0)
+        {
+            yield return waitForFixedUpdate;
+        }
+    }
 }

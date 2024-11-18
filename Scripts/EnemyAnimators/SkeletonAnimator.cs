@@ -11,4 +11,9 @@ public class SkeletonAnimator : EnemyAnimator
     {
         Animator.Play(AnimatorData.Params.SkeletonAttackAnimation);
     }
+
+    protected override void PlayEnemyHitAnimation()
+    {
+        Animator.Play(AnimatorData.Params.SkeletonHitAnimation);
+    }
 }

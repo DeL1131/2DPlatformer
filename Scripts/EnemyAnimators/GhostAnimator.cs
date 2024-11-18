@@ -11,4 +11,9 @@ public class GhostAnimator : EnemyAnimator
     {
         Animator.Play(AnimatorData.Params.GhostAttackAnimation);
     }
+
+    protected override void PlayEnemyHitAnimation()
+    {
+       
+    }
 }

@@ -29,4 +29,6 @@ public abstract class EnemyAnimator : MonoBehaviour
     protected abstract void PlayEnemyDeathAnimation();
 
     protected abstract void PlayEnemyAttackAnimation();
+
+    protected abstract void PlayEnemyHitAnimation();
 }

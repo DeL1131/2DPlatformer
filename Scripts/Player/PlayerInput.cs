@@ -16,6 +16,7 @@ public class PlayerInput : MonoBehaviour
     private Vector3 _direction;
     private Attacker _attacker;
     private SkillLifeSteal _skillLifeSteal;
+    private GroundDetectionHandler _groundDetectionHandler;
 
     public event Action SpacePressed;
     public event Action Mouse0Pressed;
@@ -26,6 +27,7 @@ public class PlayerInput : MonoBehaviour
     {
         _attacker = GetComponent<Attacker>();
         _skillLifeSteal = GetComponent<SkillLifeSteal>();
+        _groundDetectionHandler = GetComponent<GroundDetectionHandler>();
     }
 
     private void Update()
@@ -39,7 +41,7 @@ public class PlayerInput : MonoBehaviour
                 Mouse0Pressed?.Invoke();
         }
 
-        if (Input.GetKeyDown(CommandJump))
+        if (Input.GetKeyDown(CommandJump) && _groundDetectionHandler.IsGround)
         {
             SpacePressed?.Invoke();
         }
