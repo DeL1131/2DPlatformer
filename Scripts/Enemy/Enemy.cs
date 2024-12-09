@@ -17,7 +17,6 @@ public abstract class Enemy : MonoBehaviour
     private float _deathDelay = 0.5f;    
 
     public event Action Died;
-    public event Action Hited;
 
     public float CurrentDamage { get; private set; }
 

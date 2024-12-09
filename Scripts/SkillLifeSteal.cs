@@ -11,7 +11,7 @@ public class SkillLifeSteal : MonoBehaviour
     [SerializeField] private float _damage = 5;
 
     private float _duration = 6f;
-    private float _currentDuration = 0;
+    private float _currentDuration;
     private float _damageInterval = 1f;
     private float _currentInterval = 0;
     private bool _isAbilityActive = false;
@@ -21,9 +21,11 @@ public class SkillLifeSteal : MonoBehaviour
     private Player _player;
     private Collider2D _target;
     private List<Collider2D> _findedTargets = new List<Collider2D>();
-    private Coroutine _myCorotine;
+    private Coroutine _corotineDamagePerInterval;
+    private Coroutine _corotineAbilityTimerCooldown;
 
     public event Action<bool> ActiveAbilityChange;
+    public event Action<float> OnCooldownChanged;
 
     public float AbilityRange { get; private set; } = 1.5f;
     public float Cooldown { get; private set; } = 10;
@@ -47,9 +49,6 @@ public class SkillLifeSteal : MonoBehaviour
 
     private void FixedUpdate()
     {
-        CurrentCooldown -= Time.fixedDeltaTime;
-        _currentDuration -= Time.fixedDeltaTime;
-
         if (_isAbilityActive)
         {
             FindTargets();
@@ -60,7 +59,7 @@ public class SkillLifeSteal : MonoBehaviour
             if (!_isCorotineActive)
             {
                 _isCorotineActive = true;
-                _myCorotine = StartCoroutine(DamagePerInterval());
+                _corotineDamagePerInterval = StartCoroutine(DamagePerInterval());
             }
         }
 
@@ -69,7 +68,7 @@ public class SkillLifeSteal : MonoBehaviour
             if (_isCorotineActive)
             {
                 _isCorotineActive = false;
-                StopCoroutine(_myCorotine);
+                StopCoroutine(_corotineDamagePerInterval);
             }
         }
 
@@ -77,11 +76,16 @@ public class SkillLifeSteal : MonoBehaviour
         {
             _isAbilityActive = DeactivetedAbility();
 
-            if (_isCorotineActive && _myCorotine != null)
+            if (_isCorotineActive && _corotineDamagePerInterval != null)
             {
-                StopCoroutine(_myCorotine);
+                StopCoroutine(_corotineDamagePerInterval);
                 _isCorotineActive = false;
             }
+        }
+
+        if (CurrentCooldown <= 0 && _corotineAbilityTimerCooldown != null)
+        {
+            StopCoroutine(_corotineAbilityTimerCooldown);
         }
     }
 
@@ -91,6 +95,8 @@ public class SkillLifeSteal : MonoBehaviour
         CurrentCooldown = Cooldown;
         _currentDuration = _duration;
 
+        StartCoroutine(AbilityTimerDuration(_currentDuration));
+        _corotineAbilityTimerCooldown = StartCoroutine(AbilityTimerCooldown());
         ActiveAbilityChange?.Invoke(_isAbilityActive);
     }
 
@@ -155,23 +161,43 @@ public class SkillLifeSteal : MonoBehaviour
 
         while (_isCorotineActive)
         {
-            if (_target.gameObject.TryGetComponent(out IDamagable iDamagable))
+            if (_target.gameObject.TryGetComponent(out IDamagable iDamagable) && _target.gameObject.TryGetComponent(out Health health))
             {
                 iDamagable.TakeDamage(_damage);
-                _player.Healing(_healingAmount);
+
+                if (health.CurrentHealth < _healingAmount)
+                {
+                    _player.Healing(health.CurrentHealth);
+                }
+                else
+                {
+                    _player.Healing(_healingAmount);
+                }
             }
 
             yield return waitForSeconds;
         }
     }
 
-    private IEnumerator<WaitForFixedUpdate> AbilityTimerRoutine(float start, float end)
+    private IEnumerator<WaitForSeconds> AbilityTimerDuration(float duration)
     {
-        WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+        WaitForSeconds waitForSeconds = new WaitForSeconds(duration);
 
-        while (start > 0)
+        yield return waitForSeconds;
+        _currentDuration = 0;
+    }
+
+    private IEnumerator<WaitForSeconds> AbilityTimerCooldown()
+    {
+        float waitStepInterval = 0.05f;
+
+        WaitForSeconds waitSeconds = new WaitForSeconds(waitStepInterval);
+
+        while (CurrentCooldown > 0)
         {
-            yield return waitForFixedUpdate;
+            CurrentCooldown -= waitStepInterval;
+            OnCooldownChanged?.Invoke(CurrentCooldown);
+            yield return waitSeconds;
         }
     }
 }

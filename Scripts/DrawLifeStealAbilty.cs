@@ -22,23 +22,25 @@ public class DrawLifeStealAbilty : MonoBehaviour
         float normalizedRange = 2.3f;
 
         _rangeSkillimage.transform.localScale = new Vector3(_skillLifeSteal.AbilityRange * normalizedRange, _skillLifeSteal.AbilityRange * normalizedRange, 0);
+
         _skillLifeSteal.ActiveAbilityChange += ChangeAbilityActive;
-    }
+        _skillLifeSteal.OnCooldownChanged += DrawAbilityCooldown;
+    }   
 
     private void OnDisable()
     {
         _skillLifeSteal.ActiveAbilityChange -= ChangeAbilityActive;
-
-    }
-
-    private void Update()
-    {
-        _converteredFillAmount = _skillLifeSteal.CurrentCooldown / _skillLifeSteal.Cooldown;
-        _cooldownSkillImage.fillAmount = _converteredFillAmount;
+        _skillLifeSteal.OnCooldownChanged -= DrawAbilityCooldown;
     }
 
     private void ChangeAbilityActive(bool isAbilityActive)
     {
         _rangeSkillimage.gameObject.SetActive(isAbilityActive);
+    }
+
+    private void DrawAbilityCooldown(float cooldown)
+    {
+        _converteredFillAmount = cooldown / _skillLifeSteal.Cooldown;
+        _cooldownSkillImage.fillAmount = _converteredFillAmount;
     }
 }
