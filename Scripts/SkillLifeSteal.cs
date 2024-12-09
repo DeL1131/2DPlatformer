@@ -27,7 +27,7 @@ public class SkillLifeSteal : MonoBehaviour
     public event Action<bool> ActiveAbilityChange;
     public event Action<float> OnCooldownChanged;
 
-    public float AbilityRange { get; private set; } = 1.5f;
+    public float AbilityRange { get; private set; } = 1.2f;
     public float Cooldown { get; private set; } = 10;
     public float CurrentCooldown { get; private set; } = 0;
 

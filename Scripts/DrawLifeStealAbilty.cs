@@ -19,7 +19,7 @@ public class DrawLifeStealAbilty : MonoBehaviour
 
     private void OnEnable()
     {
-        float normalizedRange = 2.3f;
+        float normalizedRange = 3f;
 
         _rangeSkillimage.transform.localScale = new Vector3(_skillLifeSteal.AbilityRange * normalizedRange, _skillLifeSteal.AbilityRange * normalizedRange, 0);
 
